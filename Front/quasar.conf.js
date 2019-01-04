@@ -4,7 +4,8 @@ module.exports = function (ctx) {
   return {
     // app plugins (/src/plugins)
     plugins: [
-      'i18n'
+      'i18n',
+      'vuelidate'
     ],
     css: [
       'app.styl'

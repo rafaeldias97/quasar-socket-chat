@@ -16,4 +16,10 @@ io.on('connection', function (socket) {
   socket.on('SEND_MESSAGE', function (data) {
     io.emit('MESSAGE', data)
   })
+  socket.on('DESTROY_ID', function (data) {
+    io.emit('MESSAGE_DESTROY', {data: data})
+  })
+  socket.on('SEND_LINK', function (data) {
+    io.emit('VIDEO_LINK', data)
+  })
 })
