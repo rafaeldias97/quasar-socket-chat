@@ -11,13 +11,13 @@
 export default {
   name: 'PageIndex',
   mounted() {
-    if(this.haveConection())
+    if(this.hasConection())
       this.$router.push('/Change')
     else
       this.$router.push('/Chat')
   },
   methods: {
-    haveConection() {
+    hasConection() {
       var has = (window.localStorage.getItem('name') == null 
         && window.localStorage.getItem('image') == null)
       console.log(has)

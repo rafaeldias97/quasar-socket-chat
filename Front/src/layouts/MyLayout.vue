@@ -2,12 +2,13 @@
   <q-layout view="lHh Lpr lFf">
     <q-layout-header v-if="verifyRouter()">
       <q-toolbar
-        color="dark"
+        color="grey-10"
         :inverted="$q.theme === 'ios'"
       >
         <q-toolbar-title class="text-center">
           Chat WebSocket
         </q-toolbar-title>
+        <q-btn flat round icon="exit_to_app" @click="exitToAPP()"></q-btn>
       </q-toolbar>
     </q-layout-header>
 
@@ -28,7 +29,11 @@ export default {
   methods: {
     openURL,
     verifyRouter() {
-      return !this.$route.path === '/Change'
+      return this.$route.path !== '/Change'
+    },
+    exitToAPP() {
+      window.clear
+      this.$router.push('/Change')
     }
   }
 }

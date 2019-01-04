@@ -35,7 +35,7 @@ export default {
     return {
       name: "",
       image: ""
-    };
+    }
   },
   methods: {
     connect() {
