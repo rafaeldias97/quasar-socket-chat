@@ -9,6 +9,20 @@
 
 <script>
 export default {
-  name: 'PageIndex'
+  name: 'PageIndex',
+  mounted() {
+    if(this.haveConection())
+      this.$router.push('/Change')
+    else
+      this.$router.push('/Chat')
+  },
+  methods: {
+    haveConection() {
+      var has = (window.localStorage.getItem('name') == null 
+        && window.localStorage.getItem('image') == null)
+      console.log(has)
+      return has
+    }
+  }
 }
 </script>
