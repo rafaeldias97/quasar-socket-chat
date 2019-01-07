@@ -7,19 +7,20 @@ const server = app.listen(3001, function () {
 })
 
 const io = require('socket.io')(server)
+var nsp = io.of('/ROOM');
 
-io.on('connection', function (socket) {
-  console.log(socket.id)
+nsp.on('connection', function (socket) {
+  // console.log(socket.nsp.name)
   socket.on('GENERATE_ID', function (data) {
-    io.emit('MESSAGE_id', { id: socket.id, data: data})
+    nsp.emit('MESSAGE_id', { id: socket.id, data: data})
   })
   socket.on('SEND_MESSAGE', function (data) {
-    io.emit('MESSAGE', data)
+    nsp.emit('MESSAGE', data)
   })
   socket.on('DESTROY_ID', function (data) {
-    io.emit('MESSAGE_DESTROY', {data: data})
+    nsp.emit('MESSAGE_DESTROY', {data: data})
   })
   socket.on('SEND_LINK', function (data) {
-    io.emit('VIDEO_LINK', data)
+    nsp.emit('VIDEO_LINK', data)
   })
 })
