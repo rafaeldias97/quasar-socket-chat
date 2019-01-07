@@ -18,7 +18,7 @@
                 class="text-white"
                 :avatar="message.image"
                 :text="message.message"
-                stamp="4 minutes ago"
+                :stamp="verifyDateAgo(message.data)"
                 :sent="message.id === id"
               />
             </div>
@@ -37,14 +37,22 @@
         ></q-input>
       </div>
       <div class="col-1">
-        <q-btn round color="purple" icon="send" :disable="hasValueInput()" title="Enviar Mensagem" @click="sendMessage()"></q-btn>
+        <q-btn
+          round
+          color="purple"
+          icon="send"
+          :disable="hasValueInput()"
+          title="Enviar Mensagem"
+          @click="sendMessage()"
+        ></q-btn>
       </div>
     </div>
   </q-page>
 </template>
 
 <script>
-import io from "socket.io-client"
+import io from "socket.io-client";
+import moment from "moment";
 export default {
   data() {
     return {
@@ -56,72 +64,86 @@ export default {
       messages: [],
       socket: io("192.168.55.122:3001"),
       scrolW: 0
-    }
+    };
+  },
+  created() {
+    this.socket = io("192.168.55.122:3001/ROOM");
   },
   mounted() {
-    if (this.hasConection()) this.$router.push("/Change")
-    else this.$router.push("/Chat")
+    if (this.hasConection()) this.$router.push("/Change");
+    else this.$router.push("/Chat");
   },
   methods: {
     hasConection() {
       var has =
-        (window.localStorage.getItem("name") == null &&
-        window.localStorage.getItem("image") == null)
-      return has
+        window.localStorage.getItem("name") == null &&
+        window.localStorage.getItem("image") == null;
+      return has;
     },
     sendMessage() {
-      this.socket.emit("SEND_MESSAGE", {
-        id: this.id,
-        user: window.localStorage.getItem("name"),
-        image: window.localStorage.getItem("image"),
-        message: [this.message],
-        data: Date.now()
-      });
-      this.message = ""
+      if (!this.hasValueInput()) {
+        this.socket.emit("SEND_MESSAGE", {
+          id: this.id,
+          user: window.localStorage.getItem("name"),
+          image: window.localStorage.getItem("image"),
+          message: [this.message],
+          data: Date.now()
+        });
+        this.message = "";
+      }
     },
     scrollToBottom() {
       this.scrolW = this.$refs.chatArea.$el.scrollHeight;
       this.$refs.chatArea.setScrollPosition(
         this.$refs.chatArea.$el.scrollHeight,
         1
-      )
+      );
     },
     hasValueInput() {
-      return this.message === ""
+      return this.message === "";
+    },
+    verifyDateAgo(data) {
+      moment.locale("pt-br");
+      let res = moment(data).fromNow();
+      setInterval(() => {
+        return (res = moment(data).fromNow());
+      }, 1000);
+
+      return res;
     }
   },
   beforeDestroy() {
     this.socket.emit("DESTROY_ID", {
       user: window.localStorage.getItem("name") + ": Saiu"
-    })
+    });
   },
   mounted() {
     this.socket.on("MESSAGE", data => {
-      let msg = this.messages[this.messages.length - 1]
-      let id = msg ? msg.id : ""
+      let msg = this.messages[this.messages.length - 1];
+      let id = msg ? msg.id : "";
 
       if (data.id === id) {
-        this.messages[this.messages.length - 1].message.push(data.message)
+        this.messages[this.messages.length - 1].message.push(data.message);
       } else {
-        this.messages = [...this.messages, data]
+        this.messages = [...this.messages, data];
       }
       this.scrollToBottom();
-    })
+    });
 
     this.socket.emit("GENERATE_ID", {
       user: window.localStorage.getItem("name") + ": Está conectado"
-    })
+    });
 
     this.socket.on("MESSAGE_id", data => {
       if (this.id === 0) {
-        this.id = data.id
+        this.id = data.id;
       }
-      this.messages.push(data.data)
-    })
+      this.messages.push(data.data);
+    });
 
     this.socket.on("MESSAGE_DESTROY", data => {
-      this.messages.push(data.data)
-    })
+      this.messages.push(data.data);
+    });
   }
-}
+};
 </script>
